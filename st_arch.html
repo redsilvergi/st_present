@@ -9,7 +9,14 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 20px;
-        background: linear;
+        background: white !important;
+      }
+
+      .body-title {
+        text-align: center;
+        margin: 0 0 40px 0;
+        font-size: 35px;
+        font-weight: 800;
       }
 
       .architecture-flow {
@@ -35,24 +42,97 @@
         border: 1px solid #e9ecef;
       }
 
-      /* 3D 텐서 시각화 */
-      .tensor-visualization {
+      /* 3D 배치 시각화 */
+      .tensor-3d-stack {
         perspective: 1000px;
         perspective-origin: center center;
         position: relative;
-        height: 400px;
+        height: 450px;
         margin: 30px 0;
       }
 
-      .tensor-layer {
+      .tensor-batch-layer {
         position: absolute;
-        width: 100%;
+        width: 90%;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 8px;
         border: 2px solid #dee2e6;
         padding: 16px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
+      }
+
+      .tensor-batch-layer:hover {
+        transform: scale(1.02) !important;
+        z-index: 10;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      .tensor-batch-layer:nth-child(1) {
+        z-index: 3;
+        border-color: #007acc;
+      }
+
+      .tensor-batch-layer:nth-child(2) {
+        z-index: 2;
+        border-color: #198754;
+        background: rgba(248, 249, 250, 0.9);
+      }
+
+      .tensor-batch-layer:nth-child(3) {
+        z-index: 1;
+        border-color: #fd7e14;
+        background: rgba(248, 249, 250, 0.85);
+      }
+
+      .batch-title {
+        text-align: center;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .tensor-batch-layer:nth-child(1) .batch-title {
+        background: rgba(0, 122, 204, 0.1);
+        color: #007acc;
+      }
+
+      .tensor-batch-layer:nth-child(2) .batch-title {
+        background: rgba(25, 135, 84, 0.1);
+        color: #198754;
+      }
+
+      .tensor-batch-layer:nth-child(3) .batch-title {
+        background: rgba(253, 126, 20, 0.1);
+        color: #fd7e14;
+      }
+
+      .prediction-target {
+        background: #fff3cd !important;
+        border-color: #ffc107 !important;
+        font-weight: 600;
+        color: #856404;
+      }
+
+      .event-highlight {
+        background: #fff8f0 !important;
+        border-color: #fd7e14 !important;
+        font-weight: 600;
+        color: #fd7e14;
+      }
+
+      .batch-explanation {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 20px;
+        border: 1px solid #e9ecef;
+        margin-top: 20px;
       }
 
       .matrix-cell {
@@ -434,11 +514,15 @@
       }
 
       .legend {
+        width: 100%;
+        max-width: 852px;
+        position: relative;
         background: #f8f9fa;
         border-radius: 8px;
         padding: 24px;
-        margin-top: 32px;
+
         border: 1px solid #e9ecef;
+        margin: 32px 5px 0 5px;
       }
 
       .legend h3 {
@@ -450,13 +534,15 @@
 
       .legend-items {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: 1fr 1fr;
+        /* grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); */
         gap: 12px;
       }
 
       .legend-item {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 12px;
         font-size: 0.9em;
         color: #495057;
@@ -471,7 +557,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>🌐 ST-Transformer 아키텍처</h1>
+      <div class="body-title">🌐 ST-Transformer 아키텍처</div>
 
       <div class="architecture-flow">
         <!-- 입력 데이터 레이어 -->
@@ -481,36 +567,160 @@
               <span class="icon">📊</span>
               입력 데이터: 3D 텐서 [지역 × 시간 × 특성]
             </div>
-            <div class="data-matrix">
-              <div class="matrix-cell region-label">지역/시간</div>
-              <div class="matrix-cell time-label">9시</div>
-              <div class="matrix-cell time-label">10시</div>
-              <div class="matrix-cell time-label">11시</div>
-              <div class="matrix-cell time-label">12시</div>
 
-              <div class="matrix-cell region-label">강남역</div>
-              <div class="matrix-cell feature-cell">1,200명</div>
-              <div class="matrix-cell feature-cell">1,350명</div>
-              <div class="matrix-cell feature-cell">1,100명</div>
-              <div class="matrix-cell feature-cell">1,800명</div>
+            <!-- 3D 배치 시각화 -->
+            <div class="tensor-3d-stack">
+              <!-- 강남역 레이어 (최상단) -->
+              <div
+                class="tensor-batch-layer"
+                style="
+                  transform: translateZ(0px) translateX(0px) translateY(0px);
+                "
+              >
+                <div class="batch-title">강남역 (Batch 1)</div>
+                <div class="data-matrix">
+                  <div class="matrix-cell region-label">시간/특성</div>
+                  <div class="matrix-cell time-label">생활인구</div>
+                  <div class="matrix-cell time-label">날씨지수</div>
+                  <div class="matrix-cell time-label">이벤트</div>
+                  <div class="matrix-cell time-label">교통량</div>
 
-              <div class="matrix-cell region-label">홍대입구</div>
-              <div class="matrix-cell feature-cell">800명</div>
-              <div class="matrix-cell feature-cell">900명</div>
-              <div class="matrix-cell feature-cell">750명</div>
-              <div class="matrix-cell feature-cell">1,200명</div>
+                  <div class="matrix-cell region-label">9시</div>
+                  <div class="matrix-cell feature-cell">1,200명</div>
+                  <div class="matrix-cell weather-cell">맑음(80)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(70)</div>
 
-              <div class="matrix-cell region-label">명동역</div>
-              <div class="matrix-cell feature-cell">600명</div>
-              <div class="matrix-cell feature-cell">700명</div>
-              <div class="matrix-cell feature-cell">650명</div>
-              <div class="matrix-cell feature-cell">950명</div>
+                  <div class="matrix-cell region-label">10시</div>
+                  <div class="matrix-cell feature-cell">1,350명</div>
+                  <div class="matrix-cell weather-cell">맑음(85)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">혼잡(85)</div>
 
-              <div class="matrix-cell region-label">잠실역</div>
-              <div class="matrix-cell feature-cell">900명</div>
-              <div class="matrix-cell feature-cell">1,000명</div>
-              <div class="matrix-cell feature-cell">850명</div>
-              <div class="matrix-cell feature-cell">1,100명</div>
+                  <div class="matrix-cell region-label">11시</div>
+                  <div class="matrix-cell feature-cell">1,100명</div>
+                  <div class="matrix-cell weather-cell">흐림(65)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(60)</div>
+
+                  <div class="matrix-cell region-label">12시</div>
+                  <div class="matrix-cell feature-cell prediction-target">
+                    예측 대상
+                  </div>
+                  <div class="matrix-cell weather-cell">맑음(90)</div>
+                  <div class="matrix-cell event-cell event-highlight">
+                    축제(1)
+                  </div>
+                  <div class="matrix-cell feature-cell">혼잡(90)</div>
+                </div>
+              </div>
+
+              <!-- 홍대입구역 레이어 (중간) -->
+              <div
+                class="tensor-batch-layer"
+                style="
+                  transform: translateZ(10px) translateX(15px) translateY(15px);
+                "
+              >
+                <div class="batch-title">홍대입구역 (Batch 2)</div>
+                <div class="data-matrix">
+                  <div class="matrix-cell region-label">시간/특성</div>
+                  <div class="matrix-cell time-label">생활인구</div>
+                  <div class="matrix-cell time-label">날씨지수</div>
+                  <div class="matrix-cell time-label">이벤트</div>
+                  <div class="matrix-cell time-label">교통량</div>
+
+                  <div class="matrix-cell region-label">9시</div>
+                  <div class="matrix-cell feature-cell">800명</div>
+                  <div class="matrix-cell weather-cell">맑음(80)</div>
+                  <div class="matrix-cell event-cell event-highlight">
+                    콘서트(1)
+                  </div>
+                  <div class="matrix-cell feature-cell">혼잡(80)</div>
+
+                  <div class="matrix-cell region-label">10시</div>
+                  <div class="matrix-cell feature-cell">900명</div>
+                  <div class="matrix-cell weather-cell">맑음(85)</div>
+                  <div class="matrix-cell event-cell event-highlight">
+                    콘서트(1)
+                  </div>
+                  <div class="matrix-cell feature-cell">혼잡(90)</div>
+
+                  <div class="matrix-cell region-label">11시</div>
+                  <div class="matrix-cell feature-cell">750명</div>
+                  <div class="matrix-cell weather-cell">흐림(65)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(50)</div>
+
+                  <div class="matrix-cell region-label">12시</div>
+                  <div class="matrix-cell feature-cell prediction-target">
+                    예측 대상
+                  </div>
+                  <div class="matrix-cell weather-cell">맑음(90)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(60)</div>
+                </div>
+              </div>
+
+              <!-- 명동역 레이어 (하단) -->
+              <div
+                class="tensor-batch-layer"
+                style="
+                  transform: translateZ(20px) translateX(30px) translateY(30px);
+                "
+              >
+                <div class="batch-title">명동역 (Batch 3)</div>
+                <div class="data-matrix">
+                  <div class="matrix-cell region-label">시간/특성</div>
+                  <div class="matrix-cell time-label">생활인구</div>
+                  <div class="matrix-cell time-label">날씨지수</div>
+                  <div class="matrix-cell time-label">이벤트</div>
+                  <div class="matrix-cell time-label">교통량</div>
+
+                  <div class="matrix-cell region-label">9시</div>
+                  <div class="matrix-cell feature-cell">600명</div>
+                  <div class="matrix-cell weather-cell">맑음(80)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(40)</div>
+
+                  <div class="matrix-cell region-label">10시</div>
+                  <div class="matrix-cell feature-cell">700명</div>
+                  <div class="matrix-cell weather-cell">맑음(85)</div>
+                  <div class="matrix-cell event-cell event-highlight">
+                    세일(1)
+                  </div>
+                  <div class="matrix-cell feature-cell">혼잡(75)</div>
+
+                  <div class="matrix-cell region-label">11시</div>
+                  <div class="matrix-cell feature-cell">650명</div>
+                  <div class="matrix-cell weather-cell">흐림(65)</div>
+                  <div class="matrix-cell event-cell event-highlight">
+                    세일(1)
+                  </div>
+                  <div class="matrix-cell feature-cell">혼잡(70)</div>
+
+                  <div class="matrix-cell region-label">12시</div>
+                  <div class="matrix-cell feature-cell prediction-target">
+                    예측 대상
+                  </div>
+                  <div class="matrix-cell weather-cell">맑음(90)</div>
+                  <div class="matrix-cell event-cell">없음(0)</div>
+                  <div class="matrix-cell feature-cell">보통(55)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="batch-explanation">
+              <div class="dimension-info">
+                <strong>3D 배치 구조:</strong>
+                <span class="dim-badge">지역 배치: 3개</span>
+                <span class="dim-badge">시간 차원: 4개</span>
+                <span class="dim-badge">특성 차원: 4개</span>
+              </div>
+              <p class="tensor-desc">
+                각 지역별로 동일한 시간×특성 구조를 가지며, 3D 배치로 동시에
+                처리됩니다. 지역마다 서로 다른 이벤트와 패턴을 가지고 있습니다.
+              </p>
             </div>
           </div>
         </div>
@@ -673,26 +883,26 @@
             </p>
           </div>
         </div>
-      </div>
 
-      <div class="legend">
-        <h3>🔑 핵심 메커니즘</h3>
-        <div class="legend-items">
-          <div class="legend-item">
-            <div class="legend-color" style="background: #6f42c1"></div>
-            <span><strong>공간 어텐션:</strong> 지역간 동적 상호작용</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #198754"></div>
-            <span><strong>시간 어텐션:</strong> 과거 패턴 중요도 학습</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #fd7e14"></div>
-            <span><strong>융합 메커니즘:</strong> 공간-시간 정보 통합</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background: #20c997"></div>
-            <span><strong>동시 예측:</strong> 다중 지역 일관성 보장</span>
+        <div class="legend">
+          <h3>🔑 핵심 메커니즘</h3>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color" style="background: #6f42c1"></div>
+              <span><strong>공간 어텐션:</strong> 지역간 동적 상호작용</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #198754"></div>
+              <span><strong>시간 어텐션:</strong> 과거 패턴 중요도 학습</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #fd7e14"></div>
+              <span><strong>융합 메커니즘:</strong> 공간-시간 정보 통합</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #20c997"></div>
+              <span><strong>동시 예측:</strong> 다중 지역 일관성 보장</span>
+            </div>
           </div>
         </div>
       </div>

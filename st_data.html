@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공간-시계열 데이터 시각화 예시</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 40px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .example {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .example:hover {
+        transform: translateY(-5px);
+      }
+
+      .example h2 {
+        color: #34495e;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .chart-container {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .map-chart {
+        flex: 1;
+        min-width: 300px;
+        height: 300px;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .heatmap {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 2px;
+        height: 93%;
+        padding: 10px;
+      }
+
+      .cell {
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .temp-low {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+      }
+      .temp-medium {
+        background: linear-gradient(45deg, #f39c12, #e67e22);
+      }
+      .temp-high {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+      }
+
+      .traffic-light {
+        background: linear-gradient(45deg, #2ecc71, #27ae60);
+      }
+      .traffic-medium {
+        background: linear-gradient(45deg, #f1c40f, #f39c12);
+      }
+      .traffic-heavy {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+      }
+
+      .pollution-low {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+      }
+      .pollution-medium {
+        background: linear-gradient(45deg, #f39c12, #e67e22);
+      }
+      .pollution-high {
+        background: linear-gradient(45deg, #8e44ad, #9b59b6);
+      }
+
+      .chart-line {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        height: 200px;
+      }
+
+      .line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        border-radius: 2px;
+      }
+
+      .line1 {
+        background: linear-gradient(90deg, #3498db, #e74c3c);
+        bottom: 150px;
+        animation: drawLine1 3s ease-in-out infinite;
+      }
+
+      .line2 {
+        background: linear-gradient(90deg, #2ecc71, #f39c12);
+        bottom: 100px;
+        animation: drawLine2 3s ease-in-out infinite 0.5s;
+      }
+
+      .line3 {
+        background: linear-gradient(90deg, #9b59b6, #e67e22);
+        bottom: 50px;
+        animation: drawLine3 3s ease-in-out infinite 1s;
+      }
+
+      @keyframes drawLine1 {
+        0%,
+        100% {
+          transform: scaleX(0.3) translateY(0px);
+        }
+        50% {
+          transform: scaleX(1) translateY(-20px);
+        }
+      }
+
+      @keyframes drawLine2 {
+        0%,
+        100% {
+          transform: scaleX(0.5) translateY(0px);
+        }
+        50% {
+          transform: scaleX(0.8) translateY(10px);
+        }
+      }
+
+      @keyframes drawLine3 {
+        0%,
+        100% {
+          transform: scaleX(0.7) translateY(0px);
+        }
+        50% {
+          transform: scaleX(0.9) translateY(-10px);
+        }
+      }
+
+      .legend {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      .time-slider {
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .slider {
+        width: 80%;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #3498db, #e74c3c);
+        outline: none;
+        margin: 10px;
+      }
+
+      .time-label {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 18px;
+      }
+
+      .description {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+        margin-top: 15px;
+      }
+
+      .grid-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: linear-gradient(
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 37.5px 50px;
+        pointer-events: none;
+      }
+
+      .pulse {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.8;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🌍 공간-시계열 데이터 시각화 예시</h1>
+
+      <!-- 교통 데이터 예시 -->
+      <div class="example">
+        <h2>🚗 교통 흐름 데이터</h2>
+        <div class="chart-container">
+          <div class="map-chart">
+            <div class="heatmap" id="trafficMap">
+              <!-- 동적으로 생성됨 -->
+            </div>
+            <div class="grid-overlay"></div>
+          </div>
+        </div>
+        <div class="time-slider">
+          <div class="time-label" id="trafficTime">오전 7시 (출근 시간)</div>
+          <input
+            type="range"
+            class="slider"
+            min="0"
+            max="23"
+            value="7"
+            id="trafficSlider"
+          />
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color traffic-light"></div>
+            <span>원활 (0-30 km/h)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color traffic-medium"></div>
+            <span>보통 (30-50 km/h)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color traffic-heavy"></div>
+            <span>정체 (50+ km/h)</span>
+          </div>
+        </div>
+        <div class="description">
+          <strong>설명:</strong> 도로 구간별 교통 속도를 색상으로 표현합니다.
+          출퇴근 시간대에 특정 구간의 정체 패턴을 관찰할 수 있습니다.
+        </div>
+      </div>
+
+      <!-- 대기오염 데이터 예시 -->
+      <div class="example">
+        <h2>🏭 대기질 모니터링 데이터</h2>
+        <div class="chart-container">
+          <div class="map-chart">
+            <div class="heatmap" id="pollutionMap">
+              <!-- 동적으로 생성됨 -->
+            </div>
+            <div class="grid-overlay"></div>
+          </div>
+        </div>
+        <div class="time-slider">
+          <div class="time-label" id="pollutionTime">오후 2시</div>
+          <input
+            type="range"
+            class="slider"
+            min="0"
+            max="23"
+            value="14"
+            id="pollutionSlider"
+          />
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color pollution-low"></div>
+            <span>좋음 (0-30 ㎍/㎥)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color pollution-medium"></div>
+            <span>보통 (31-80 ㎍/㎥)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color pollution-high"></div>
+            <span>나쁨 (81+ ㎍/㎥)</span>
+          </div>
+        </div>
+        <div class="description">
+          <strong>설명:</strong> 도시 각 지역의 미세먼지 농도를 실시간으로
+          모니터링하며, 공간적 확산 패턴과 시간적 변화를 동시에 추적할 수
+          있습니다.
+        </div>
+      </div>
+
+      <!-- 기상 데이터 예시 -->
+      <div class="example">
+        <h2>🌡️ 기상 데이터 (온도 분포)</h2>
+        <div class="chart-container">
+          <div class="map-chart">
+            <div class="heatmap" id="weatherMap">
+              <!-- 동적으로 생성됨 -->
+            </div>
+            <div class="grid-overlay"></div>
+          </div>
+        </div>
+        <div class="time-slider">
+          <div class="time-label" id="weatherTime">2024년 1월 오전 9시</div>
+          <input
+            type="range"
+            class="slider"
+            min="0"
+            max="23"
+            value="9"
+            id="weatherSlider"
+          />
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color temp-low"></div>
+            <span>저온 (-5°C ~ 5°C)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color temp-medium"></div>
+            <span>중온 (5°C ~ 15°C)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color temp-high"></div>
+            <span>고온 (15°C ~ 25°C)</span>
+          </div>
+        </div>
+        <div class="description">
+          <strong>설명:</strong> 각 격자는 특정 지역을 나타내며, 색상은 온도를
+          표현합니다. 시간 슬라이더로 하루 중 온도 변화를 확인할 수 있습니다.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 히트맵 생성 함수
+      function createHeatmap(containerId, dataType) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        for (let i = 0; i < 48; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell pulse';
+
+          // 데이터 타입에 따른 색상 및 값 설정
+          let value, className;
+          const random = Math.random();
+
+          if (dataType === 'weather') {
+            if (random < 0.3) {
+              className = 'temp-low';
+              value = Math.floor(Math.random() * 10 - 5);
+            } else if (random < 0.7) {
+              className = 'temp-medium';
+              value = Math.floor(Math.random() * 10 + 5);
+            } else {
+              className = 'temp-high';
+              value = Math.floor(Math.random() * 10 + 15);
+            }
+            cell.textContent = value + '°';
+          } else if (dataType === 'traffic') {
+            if (random < 0.4) {
+              className = 'traffic-light';
+              value = Math.floor(Math.random() * 30);
+            } else if (random < 0.7) {
+              className = 'traffic-medium';
+              value = Math.floor(Math.random() * 20 + 30);
+            } else {
+              className = 'traffic-heavy';
+              value = Math.floor(Math.random() * 30 + 50);
+            }
+            cell.textContent = value;
+          } else if (dataType === 'pollution') {
+            if (random < 0.3) {
+              className = 'pollution-low';
+              value = Math.floor(Math.random() * 30);
+            } else if (random < 0.7) {
+              className = 'pollution-medium';
+              value = Math.floor(Math.random() * 50 + 31);
+            } else {
+              className = 'pollution-high';
+              value = Math.floor(Math.random() * 50 + 81);
+            }
+            cell.textContent = value;
+          }
+
+          cell.className += ' ' + className;
+          container.appendChild(cell);
+        }
+      }
+
+      // 시간 슬라이더 이벤트 핸들러
+      function setupTimeSlider(sliderId, labelId, type) {
+        const slider = document.getElementById(sliderId);
+        const label = document.getElementById(labelId);
+
+        slider.addEventListener('input', function () {
+          const hour = parseInt(this.value);
+          let timeText = '';
+
+          if (type === 'weather') {
+            timeText = `2024년 1월 ${hour < 12 ? '오전' : '오후'} ${
+              hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+            }시`;
+          } else if (type === 'traffic') {
+            const period = hour < 12 ? '오전' : '오후';
+            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            let description = '';
+            if (hour >= 7 && hour <= 9) description = ' (출근 시간)';
+            else if (hour >= 18 && hour <= 20) description = ' (퇴근 시간)';
+            else if (hour >= 22 || hour <= 5) description = ' (심야 시간)';
+            timeText = `${period} ${displayHour}시${description}`;
+          } else if (type === 'pollution') {
+            timeText = `${hour < 12 ? '오전' : '오후'} ${
+              hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+            }시`;
+          }
+
+          label.textContent = timeText;
+
+          // 시간에 따라 히트맵 업데이트
+          const mapId = type + 'Map';
+          createHeatmap(mapId, type);
+        });
+      }
+
+      // 초기화
+      document.addEventListener('DOMContentLoaded', function () {
+        createHeatmap('weatherMap', 'weather');
+        createHeatmap('trafficMap', 'traffic');
+        createHeatmap('pollutionMap', 'pollution');
+
+        setupTimeSlider('weatherSlider', 'weatherTime', 'weather');
+        setupTimeSlider('trafficSlider', 'trafficTime', 'traffic');
+        setupTimeSlider('pollutionSlider', 'pollutionTime', 'pollution');
+      });
+
+      // 자동 업데이트 (데모용)
+      setInterval(function () {
+        createHeatmap('weatherMap', 'weather');
+        createHeatmap('trafficMap', 'traffic');
+        createHeatmap('pollutionMap', 'pollution');
+      }, 5000);
+    </script>
+  </body>
+</html>
