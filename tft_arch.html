@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TFT 아키텍처 다이어그램</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 40px;
+        font-size: 2.2em;
+        font-weight: 700;
+      }
+
+      .architecture {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        align-items: center;
+      }
+
+      .layer {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        padding: 20px;
+        width: 100%;
+        max-width: 700px;
+        position: relative;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .layer:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+      }
+
+      .input-layer {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        border-left: 6px solid #2196f3;
+      }
+
+      .selection-layer {
+        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        border-left: 6px solid #9c27b0;
+      }
+
+      .encoder-layer {
+        background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        border-left: 6px solid #4caf50;
+      }
+
+      .attention-layer {
+        background: linear-gradient(135deg, #fff3e0, #ffcc80);
+        border-left: 6px solid #ff9800;
+      }
+
+      .gating-layer {
+        background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        border-left: 6px solid #e91e63;
+      }
+
+      .output-layer {
+        background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+        border-left: 6px solid #009688;
+      }
+
+      .layer-title {
+        font-size: 1.4em;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .layer-content {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .component {
+        background: white;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-size: 0.95em;
+        font-weight: 500;
+        color: #495057;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .component:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .arrow {
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 25px solid #6c757d;
+        margin: 10px auto;
+        position: relative;
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-5px);
+        }
+        60% {
+          transform: translateY(-3px);
+        }
+      }
+
+      .icon {
+        font-size: 1.2em;
+      }
+
+      .flow-text {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.9em;
+        font-weight: 500;
+        margin: 15px 0 5px 0;
+      }
+
+      .description {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+        border-left: 4px solid #007bff;
+      }
+
+      .description h3 {
+        color: #2c3e50;
+        margin-top: 0;
+      }
+
+      .key-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .feature {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature strong {
+        color: #495057;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 10px;
+        }
+
+        .layer-content {
+          flex-direction: column;
+        }
+
+        .component {
+          min-width: auto;
+        }
+
+        .key-features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔮 TFT (Temporal Fusion Transformer) 아키텍처</h1>
+
+      <div class="architecture">
+        <!-- Input Layer -->
+        <div class="layer input-layer">
+          <div class="layer-title">
+            <span class="icon">📊</span>
+            입력 데이터
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              Static Covariates<br /><small>정적 변수</small>
+            </div>
+            <div class="component">
+              Historical Known<br /><small>과거 알려진 값</small>
+            </div>
+            <div class="component">
+              Future Known<br /><small>미래 알려진 값</small>
+            </div>
+            <div class="component">
+              Target History<br /><small>예측 대상 이력</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="flow-text">특성 선택</div>
+
+        <!-- Variable Selection Layer -->
+        <div class="layer selection-layer">
+          <div class="layer-title">
+            <span class="icon">🎯</span>
+            Variable Selection Network
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              Feature Selection<br /><small>중요 특성 선택</small>
+            </div>
+            <div class="component">
+              Variable Importance<br /><small>변수 중요도 계산</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="flow-text">시계열 인코딩</div>
+
+        <!-- LSTM Encoder-Decoder Layer -->
+        <div class="layer encoder-layer">
+          <div class="layer-title">
+            <span class="icon">🔄</span>
+            LSTM Encoder-Decoder
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              LSTM Encoder<br /><small>과거 데이터 처리</small>
+            </div>
+            <div class="component">
+              LSTM Decoder<br /><small>미래 예측 준비</small>
+            </div>
+            <div class="component">
+              Context Vector<br /><small>정적 정보 조건화</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="flow-text">장기 의존성 학습</div>
+
+        <!-- Multi-Head Attention Layer -->
+        <div class="layer attention-layer">
+          <div class="layer-title">
+            <span class="icon">👁️</span>
+            Interpretable Multi-Head Attention
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              Shared Values<br /><small>공통 값 행렬</small>
+            </div>
+            <div class="component">
+              Attention Scores<br /><small>시점별 중요도</small>
+            </div>
+            <div class="component">
+              Long-term Dependencies<br /><small>장기 패턴 캡처</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="flow-text">적응적 처리</div>
+
+        <!-- Gated Residual Network Layer -->
+        <div class="layer gating-layer">
+          <div class="layer-title">
+            <span class="icon">🚪</span>
+            Gated Residual Network
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              Gating Mechanism<br /><small>불필요 성분 억제</small>
+            </div>
+            <div class="component">
+              Residual Connection<br /><small>잔차 연결</small>
+            </div>
+            <div class="component">
+              Non-linear Processing<br /><small>비선형 변환</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="flow-text">최종 예측</div>
+
+        <!-- Output Layer -->
+        <div class="layer output-layer">
+          <div class="layer-title">
+            <span class="icon">📈</span>
+            Multi-Quantile Output
+          </div>
+          <div class="layer-content">
+            <div class="component">
+              Point Forecast<br /><small>점 예측값</small>
+            </div>
+            <div class="component">
+              Prediction Intervals<br /><small>예측 구간</small>
+            </div>
+            <div class="component">
+              Uncertainty Quantification<br /><small>불확실성 정량화</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="description">
+        <h3>🔑 TFT 핵심 특징</h3>
+        <div class="key-features">
+          <div class="feature">
+            <strong>하이브리드 구조</strong>
+            LSTM의 순환성과 Transformer의 어텐션을 결합
+          </div>
+          <div class="feature">
+            <strong>해석 가능성</strong>
+            변수 중요도와 시점별 어텐션 스코어 제공
+          </div>
+          <div class="feature">
+            <strong>다중 입력 처리</strong>
+            정적/과거/미래 변수를 통합적으로 활용
+          </div>
+          <div class="feature">
+            <strong>불확실성 모델링</strong>
+            다중 분위수 회귀로 예측 구간 제공
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
