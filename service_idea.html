@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이벤트 기반 인구 예측 서비스</title>
+    <style>
+      body {
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        background: white !important;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .container {
+        background: white !important;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        max-width: 1400px;
+        margin: 0 auto;
+        border: 1px solid #e1e5e9;
+      }
+
+      h1 {
+        text-align: center;
+        color: #1a1a1a;
+        margin-bottom: 40px;
+        font-size: 2.4em;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .service-overview {
+        background: #f0f8ff;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 40px;
+        text-align: center;
+      }
+
+      .service-overview h2 {
+        color: #1a1a1a;
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+
+      .service-flow {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 20px;
+        align-items: center;
+        margin: 20px 0;
+      }
+
+      .flow-input,
+      .flow-output {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+      }
+
+      .flow-arrow {
+        font-size: 2em;
+        color: #007acc;
+      }
+
+      /* 입력 시뮬레이터 */
+      .input-simulator {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 40px;
+      }
+
+      .simulator-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .input-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .form-label {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9em;
+      }
+
+      .form-input,
+      .form-select {
+        padding: 10px 12px;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        background: white;
+        font-size: 0.9em;
+      }
+
+      .form-input:focus,
+      .form-select:focus {
+        outline: none;
+        border-color: #007acc;
+      }
+
+      .predict-button {
+        background: #007acc;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0 auto;
+        display: block;
+      }
+
+      .predict-button:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+      }
+
+      /* 예측 결과 시각화 */
+      .prediction-results {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      .result-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 24px;
+      }
+
+      .result-title {
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      .heatmap-simulation {
+        width: 100%;
+        height: 200px;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .heatmap-grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 2px;
+        height: 100%;
+        padding: 8px;
+      }
+
+      .heatmap-cell {
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: 500;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .impact-none {
+        background: #e9ecef;
+        color: #6c757d;
+      }
+      .impact-low {
+        background: #28a745;
+      }
+      .impact-medium {
+        background: #ffc107;
+      }
+      .impact-high {
+        background: #fd7e14;
+      }
+      .impact-peak {
+        background: #dc3545;
+      }
+
+      .timeline-chart {
+        width: 100%;
+        height: 200px;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        position: relative;
+        display: flex;
+        align-items: end;
+        padding: 16px;
+        gap: 4px;
+      }
+
+      .timeline-bar {
+        flex: 1;
+        background: #007acc;
+        border-radius: 2px 2px 0 0;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 10px;
+      }
+
+      .timeline-bar:hover {
+        background: #0056b3;
+        transform: scaleY(1.1);
+      }
+
+      /* 파급효과 분석 */
+      .impact-analysis {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 40px;
+      }
+
+      .analysis-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .impact-layers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .impact-layer {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+      }
+
+      .layer-icon {
+        font-size: 2em;
+        margin-bottom: 8px;
+      }
+
+      .layer-title {
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .layer-impact {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .layer-description {
+        font-size: 0.85em;
+        color: #6c757d;
+      }
+
+      /* 활용 사례 */
+      .use-cases {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .use-case-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .use-case-title {
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .use-case-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .use-case-item {
+        background: white;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+        font-size: 0.9em;
+      }
+
+      /* 기술 스택 */
+      .tech-stack {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 40px;
+      }
+
+      .tech-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .tech-flow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .tech-step {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        flex: 1;
+        min-width: 150px;
+        text-align: center;
+        font-size: 0.9em;
+      }
+
+      .tech-arrow {
+        color: #6c757d;
+        font-size: 1.2em;
+      }
+
+      /* 결론 섹션 */
+      .conclusion {
+        background: #e8f5e8;
+        border: 1px solid #c3e6c3;
+        border-radius: 8px;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .conclusion h3 {
+        color: #1a1a1a;
+        margin-bottom: 16px;
+      }
+
+      .feasibility-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .feasibility-card {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #c3e6c3;
+      }
+
+      .feasibility-score {
+        font-size: 1.4em;
+        font-weight: 600;
+        color: #198754;
+        margin-bottom: 8px;
+      }
+
+      /* 반응형 */
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 10px;
+        }
+
+        .service-flow {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .prediction-results {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .input-form {
+          grid-template-columns: 1fr;
+        }
+
+        .tech-flow {
+          flex-direction: column;
+        }
+
+        .tech-arrow {
+          transform: rotate(90deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎪 이벤트 기반 인구 예측 서비스</h1>
+
+      <!-- 서비스 개요 -->
+      <div class="service-overview">
+        <h2>가상 이벤트 입력으로 실시간 인구 변화 예측</h2>
+        <div class="service-flow">
+          <div class="flow-input">
+            <strong>📝 입력</strong><br />
+            <small>이벤트 정보 입력<br />(위치, 규모, 시간, 유형)</small>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-output">
+            <strong>📊 출력</strong><br />
+            <small>집계구별 인구 변화<br />(시간대별, 영향 반경별)</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 입력 시뮬레이터 -->
+      <div class="input-simulator">
+        <div class="simulator-title">🎯 이벤트 정보 입력 시뮬레이터</div>
+        <div class="input-form">
+          <div class="form-group">
+            <label class="form-label">이벤트 위치</label>
+            <input
+              type="text"
+              class="form-input"
+              value="광화문광장"
+              placeholder="위치를 입력하세요"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">이벤트 유형</label>
+            <select class="form-select">
+              <option>문화 이벤트 (콘서트)</option>
+              <option>스포츠 경기</option>
+              <option>상업 이벤트 (팝업스토어)</option>
+              <option>정치 집회</option>
+              <option>축제</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">예상 참석자 수</label>
+            <input
+              type="number"
+              class="form-input"
+              value="2000"
+              placeholder="명"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">이벤트 시간</label>
+            <input
+              type="text"
+              class="form-input"
+              value="19:00-21:00"
+              placeholder="시작-종료 시간"
+            />
+          </div>
+        </div>
+        <button class="predict-button" onclick="simulatePrediction()">
+          🔮 인구 변화 예측하기
+        </button>
+      </div>
+
+      <!-- 예측 결과 시각화 -->
+      <div class="prediction-results">
+        <div class="result-card">
+          <div class="result-title">📍 공간적 영향 분포</div>
+          <div class="heatmap-simulation">
+            <div class="heatmap-grid" id="heatmapGrid">
+              <!-- 동적으로 생성됨 -->
+            </div>
+          </div>
+          <p
+            style="
+              margin-top: 12px;
+              font-size: 0.85em;
+              color: #6c757d;
+              text-align: center;
+            "
+          >
+            이벤트 중심에서 주변으로 확산되는 인구 영향도
+          </p>
+        </div>
+
+        <div class="result-card">
+          <div class="result-title">⏰ 시간대별 인구 변화</div>
+          <div class="timeline-chart" id="timelineChart">
+            <!-- 동적으로 생성됨 -->
+          </div>
+          <p
+            style="
+              margin-top: 12px;
+              font-size: 0.85em;
+              color: #6c757d;
+              text-align: center;
+            "
+          >
+            17시부터 22시까지 시간대별 인구 증가량
+          </p>
+        </div>
+      </div>
+
+      <!-- 파급효과 분석 -->
+      <div class="impact-analysis">
+        <div class="analysis-title">🌊 공간적 파급효과 분석</div>
+        <div class="impact-layers">
+          <div class="impact-layer">
+            <div class="layer-icon">🎯</div>
+            <div class="layer-title">직접 영향 지역</div>
+            <div class="layer-impact" style="color: #dc3545">+1,800명</div>
+            <div class="layer-description">
+              광화문광장 집계구<br />이벤트 직접 참여자
+            </div>
+          </div>
+          <div class="impact-layer">
+            <div class="layer-icon">🚇</div>
+            <div class="layer-title">1차 확산 지역</div>
+            <div class="layer-impact" style="color: #fd7e14">+450명</div>
+            <div class="layer-description">
+              지하철 5호선/1호선<br />접근 및 대기 인구
+            </div>
+          </div>
+          <div class="impact-layer">
+            <div class="layer-icon">🏪</div>
+            <div class="layer-title">2차 확산 지역</div>
+            <div class="layer-impact" style="color: #ffc107">+180명</div>
+            <div class="layer-description">
+              명동/종로 상권<br />식사 및 쇼핑 유입
+            </div>
+          </div>
+          <div class="impact-layer">
+            <div class="layer-icon">🚌</div>
+            <div class="layer-title">교통 영향 지역</div>
+            <div class="layer-impact" style="color: #28a745">+80명</div>
+            <div class="layer-description">
+              버스 정류장/주차장<br />교통 대기 인구
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 활용 사례 -->
+      <div class="use-cases">
+        <div class="use-case-card">
+          <div class="use-case-title">
+            <span>🎬</span>
+            이벤트 기획사
+          </div>
+          <ul class="use-case-list">
+            <li class="use-case-item">경제적 파급효과 사전 분석</li>
+            <li class="use-case-item">최적 장소 및 시간 선정</li>
+            <li class="use-case-item">지자체 협의 객관 데이터</li>
+            <li class="use-case-item">관련 업체 상권 분석</li>
+          </ul>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-title">
+            <span>🏛️</span>
+            지자체/경찰
+          </div>
+          <ul class="use-case-list">
+            <li class="use-case-item">교통 통제 계획 수립</li>
+            <li class="use-case-item">안전 관리 인력 배치</li>
+            <li class="use-case-item">시민 불편 최소화 방안</li>
+            <li class="use-case-item">응급상황 대응 계획</li>
+          </ul>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-title">
+            <span>🏪</span>
+            상권 사업자
+          </div>
+          <ul class="use-case-list">
+            <li class="use-case-item">매출 기회 사전 파악</li>
+            <li class="use-case-item">직원 근무 계획 수립</li>
+            <li class="use-case-item">재고 준비량 결정</li>
+            <li class="use-case-item">마케팅 전략 수립</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 기술 구현 스택 -->
+      <div class="tech-stack">
+        <div class="tech-title">⚙️ 기술 구현 과정</div>
+        <div class="tech-flow">
+          <div class="tech-step">
+            <strong>이벤트 임베딩</strong><br />
+            <small>특성 벡터화</small>
+          </div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-step">
+            <strong>유사 사례 매칭</strong><br />
+            <small>과거 패턴 검색</small>
+          </div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-step">
+            <strong>ST-Transformer</strong><br />
+            <small>공간-시간 예측</small>
+          </div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-step">
+            <strong>실시간 보정</strong><br />
+            <small>외부변수 반영</small>
+          </div>
+          <div class="tech-arrow">→</div>
+          <div class="tech-step">
+            <strong>결과 시각화</strong><br />
+            <small>히트맵/그래프</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결론 -->
+      <div class="conclusion">
+        <h3>🚀 서비스 실현 가능성</h3>
+        <p>
+          3년간 19,000개 집계구 데이터와 ST-Transformer 기술로 충분히 구현
+          가능한 혁신적인 서비스
+        </p>
+
+        <div class="feasibility-grid">
+          <div class="feasibility-card">
+            <div class="feasibility-score">95%</div>
+            <div><strong>기술적 실현성</strong></div>
+            <small>기존 기술 스택 활용 가능</small>
+          </div>
+
+          <div class="feasibility-card">
+            <div class="feasibility-score">90%</div>
+            <div><strong>데이터 충분성</strong></div>
+            <small>3년 데이터로 패턴 학습</small>
+          </div>
+
+          <div class="feasibility-card">
+            <div class="feasibility-score">85%</div>
+            <div><strong>비즈니스 가치</strong></div>
+            <small>다양한 분야 활용 가능</small>
+          </div>
+
+          <div class="feasibility-card">
+            <div class="feasibility-score">±25%</div>
+            <div><strong>예측 정확도</strong></div>
+            <small>실용적 수준의 정확도</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 히트맵 생성
+      function createHeatmap() {
+        const heatmapGrid = document.getElementById('heatmapGrid');
+        heatmapGrid.innerHTML = '';
+
+        // 광화문광장 이벤트 영향 시뮬레이션
+        const impactPattern = [
+          [0, 0, 1, 1, 1, 0, 0, 0],
+          [0, 1, 2, 3, 2, 1, 0, 0],
+          [1, 2, 3, 4, 3, 2, 1, 0],
+          [1, 2, 3, 4, 3, 2, 1, 0],
+          [0, 1, 2, 3, 2, 1, 0, 0],
+          [0, 0, 1, 1, 1, 0, 0, 0],
+        ];
+
+        const impactClasses = [
+          'impact-none',
+          'impact-low',
+          'impact-medium',
+          'impact-high',
+          'impact-peak',
+        ];
+        const impactLabels = ['0', '+50', '+150', '+300', '+500'];
+
+        for (let row = 0; row < 6; row++) {
+          for (let col = 0; col < 8; col++) {
+            const cell = document.createElement('div');
+            cell.className =
+              'heatmap-cell ' + impactClasses[impactPattern[row][col]];
+            cell.textContent = impactLabels[impactPattern[row][col]];
+            heatmapGrid.appendChild(cell);
+          }
+        }
+      }
+
+      // 타임라인 차트 생성
+      function createTimeline() {
+        const timelineChart = document.getElementById('timelineChart');
+        timelineChart.innerHTML = '';
+
+        // 이벤트 시간대별 인구 변화 (17시-22시)
+        const timeData = [20, 35, 80, 100, 95, 45]; // 상대적 증가율
+
+        timeData.forEach((value, index) => {
+          const bar = document.createElement('div');
+          bar.className = 'timeline-bar';
+          bar.style.height = value + '%';
+          bar.title = `${17 + index}시: +${Math.floor(value * 18)}명`;
+          timelineChart.appendChild(bar);
+        });
+      }
+
+      // 예측 시뮬레이션
+      function simulatePrediction() {
+        // 버튼 비활성화 및 로딩 표시
+        const button = document.querySelector('.predict-button');
+        const originalText = button.textContent;
+        button.textContent = '🔄 분석 중...';
+        button.disabled = true;
+
+        // 2초 후 결과 생성
+        setTimeout(() => {
+          createHeatmap();
+          createTimeline();
+
+          button.textContent = originalText;
+          button.disabled = false;
+
+          // 결과 섹션으로 스크롤
+          document.querySelector('.prediction-results').scrollIntoView({
+            behavior: 'smooth',
+          });
+        }, 2000);
+      }
+
+      // 초기 로드
+      document.addEventListener('DOMContentLoaded', function () {
+        createHeatmap();
+        createTimeline();
+      });
+    </script>
+  </body>
+</html>

@@ -55,9 +55,13 @@
       .cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        /* grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); */
+        grid-template-rows: 1fr 1fr auto;
         gap: 25px;
         margin-bottom: 40px;
+      }
+
+      .card.service-idea {
+        grid-column: 1 / -1;
       }
 
       .card {
@@ -169,8 +173,16 @@
         border-color: #6f42c1;
       }
 
-      .card.comp-page:hover .card-button {
-        background: #5a2d91;
+      .card.service-idea::before {
+        background: linear-gradient(90deg, #e91e63, #c2185b);
+      }
+
+      .card.service-idea:hover {
+        border-color: #e91e63;
+      }
+
+      .card.service-idea:hover .card-button {
+        background: #c2185b;
       }
 
       .footer {
@@ -283,6 +295,17 @@
             적합한 모델을 선택하세요.
           </p>
           <div class="card-button">모델 비교하기</div>
+        </a>
+
+        <!-- Event-based Population Prediction Service -->
+        <a href="service_idea.html" class="card service-idea">
+          <div class="card-icon">🎪</div>
+          <h2>이벤트 기반 인구 예측 서비스</h2>
+          <p>
+            가상 이벤트 입력으로 해당 지역의 인구 변화를 실시간 예측하는
+            혁신적인 서비스 아이디어를 체험해보세요.
+          </p>
+          <div class="card-button">서비스 체험하기</div>
         </a>
       </div>
 
