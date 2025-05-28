@@ -3,133 +3,315 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TFT 아키텍처 다이어그램</title>
+    <title>TFT 아키텍처 - 실제 데이터 예시</title>
     <style>
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
-        padding: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 20px;
+        background: #fafafa;
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        line-height: 1.6;
       }
 
       .container {
         background: white;
-        border-radius: 20px;
+        border-radius: 12px;
         padding: 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        max-width: 900px;
-        width: 100%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        max-width: 1200px;
+        margin: 0 auto;
+        border: 1px solid #e1e5e9;
       }
 
       h1 {
         text-align: center;
-        color: #2c3e50;
+        color: #1a1a1a;
         margin-bottom: 40px;
-        font-size: 2.2em;
-        font-weight: 700;
+        font-size: 2.4em;
+        font-weight: 600;
+        letter-spacing: -0.02em;
       }
 
-      .architecture {
+      .architecture-flow {
         display: flex;
         flex-direction: column;
-        gap: 25px;
+        gap: 30px;
         align-items: center;
       }
 
-      .layer {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border-radius: 15px;
-        padding: 20px;
+      .layer-section {
         width: 100%;
-        max-width: 700px;
+        max-width: 900px;
         position: relative;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
       }
 
-      .layer:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-      }
-
-      .input-layer {
-        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-        border-left: 6px solid #2196f3;
-      }
-
-      .selection-layer {
-        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-        border-left: 6px solid #9c27b0;
-      }
-
-      .encoder-layer {
-        background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
-        border-left: 6px solid #4caf50;
-      }
-
-      .attention-layer {
-        background: linear-gradient(135deg, #fff3e0, #ffcc80);
-        border-left: 6px solid #ff9800;
-      }
-
-      .gating-layer {
-        background: linear-gradient(135deg, #fce4ec, #f8bbd9);
-        border-left: 6px solid #e91e63;
-      }
-
-      .output-layer {
-        background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
-        border-left: 6px solid #009688;
-      }
-
-      .layer-title {
-        font-size: 1.4em;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .layer-content {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-
-      .component {
-        background: white;
-        padding: 12px 18px;
-        border-radius: 10px;
-        font-size: 0.95em;
-        font-weight: 500;
-        color: #495057;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        flex: 1;
-        min-width: 120px;
-        text-align: center;
+      /* 공통 레이어 스타일 */
+      .layer {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 24px;
+        border: 1px solid #e9ecef;
         transition: all 0.2s ease;
       }
 
-      .component:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      .layer:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       }
 
-      .arrow {
+      /* 각 레이어별 색상 */
+      .input-layer {
+        border-left: 3px solid #007acc;
+      }
+      .selection-layer {
+        border-left: 3px solid #6f42c1;
+      }
+      .encoder-layer {
+        border-left: 3px solid #198754;
+      }
+      .attention-layer {
+        border-left: 3px solid #fd7e14;
+      }
+      .gating-layer {
+        border-left: 3px solid #dc3545;
+      }
+      .output-layer {
+        border-left: 3px solid #20c997;
+      }
+
+      .section-title {
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon {
+        font-size: 1.1em;
+      }
+
+      /* 데이터 예시 섹션 */
+      .data-example {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+        align-items: start;
+        margin: 20px 0;
+      }
+
+      .example-label {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        font-weight: 500;
+        color: #495057;
+      }
+
+      .example-content {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+      }
+
+      /* 입력 데이터 시각화 */
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .input-card {
+        background: white;
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+      }
+
+      .input-card h4 {
+        margin: 0 0 12px 0;
+        color: #1a1a1a;
+        font-size: 0.9em;
+        font-weight: 500;
+      }
+
+      .data-list {
+        font-size: 0.8em;
+        color: #495057;
+        line-height: 1.4;
+      }
+
+      /* Variable Selection 시각화 */
+      .selection-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .selection-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .bar-label {
+        min-width: 80px;
+        font-size: 0.85em;
+        font-weight: 500;
+      }
+
+      .bar-visual {
+        flex: 1;
+        height: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+      }
+
+      .bar-score {
+        font-size: 0.8em;
+        font-weight: 500;
+        min-width: 40px;
+      }
+
+      /* LSTM 인코더 시각화 */
+      .lstm-flow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 16px 0;
+      }
+
+      .lstm-step {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        flex: 1;
+        margin: 0 4px;
+        position: relative;
+      }
+
+      .lstm-step::after {
+        content: '→';
+        position: absolute;
+        right: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-weight: bold;
+      }
+
+      .lstm-step:last-child::after {
+        display: none;
+      }
+
+      .step-time {
+        font-size: 0.75em;
+        color: #6c757d;
+        margin-bottom: 4px;
+      }
+
+      .step-value {
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #1a1a1a;
+      }
+
+      /* Attention 매트릭스 */
+      .attention-matrix {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        margin: 16px 0;
+      }
+
+      .attention-cell {
+        aspect-ratio: 1;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: 500;
+        color: white;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .attention-high {
+        background: #dc3545;
+      }
+      .attention-medium {
+        background: #fd7e14;
+      }
+      .attention-low {
+        background: #6c757d;
+      }
+
+      /* 출력 예측 */
+      .prediction-timeline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 16px 0;
+      }
+
+      .prediction-point {
+        background: white;
+        padding: 16px 12px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        flex: 1;
+        position: relative;
+      }
+
+      .prediction-point.future {
+        border-color: #20c997;
+        background: #f0fdf9;
+      }
+
+      .pred-time {
+        font-size: 0.75em;
+        color: #6c757d;
+        margin-bottom: 6px;
+      }
+
+      .pred-value {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .pred-confidence {
+        font-size: 0.7em;
+        color: #6c757d;
+        margin-top: 4px;
+      }
+
+      /* 화살표 */
+      .flow-arrow {
         width: 0;
         height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 25px solid #6c757d;
-        margin: 10px auto;
-        position: relative;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-top: 16px solid #6c757d;
+        margin: 20px auto;
         animation: bounce 2s infinite;
       }
 
@@ -142,231 +324,550 @@
           transform: translateY(0);
         }
         40% {
-          transform: translateY(-5px);
-        }
-        60% {
           transform: translateY(-3px);
         }
-      }
-
-      .icon {
-        font-size: 1.2em;
+        60% {
+          transform: translateY(-2px);
+        }
       }
 
       .flow-text {
         text-align: center;
         color: #6c757d;
         font-size: 0.9em;
-        font-weight: 500;
-        margin: 15px 0 5px 0;
+        font-weight: 400;
+        margin: 12px 0 8px 0;
       }
 
-      .description {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
-        margin-top: 30px;
-        border-left: 4px solid #007bff;
-      }
-
-      .description h3 {
-        color: #2c3e50;
-        margin-top: 0;
-      }
-
-      .key-features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-top: 15px;
-      }
-
-      .feature {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .feature strong {
-        color: #495057;
-        display: block;
-        margin-bottom: 5px;
-      }
-
+      /* 반응형 */
       @media (max-width: 768px) {
         .container {
           padding: 20px;
           margin: 10px;
         }
 
-        .layer-content {
-          flex-direction: column;
+        .data-example {
+          grid-template-columns: 1fr;
+          gap: 12px;
         }
 
-        .component {
-          min-width: auto;
-        }
-
-        .key-features {
+        .input-grid {
           grid-template-columns: 1fr;
         }
+
+        .lstm-flow {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .lstm-step::after {
+          content: '↓';
+          right: 50%;
+          top: 100%;
+          transform: translateX(50%);
+        }
+
+        .prediction-timeline {
+          flex-direction: column;
+        }
+      }
+
+      .process-explanation {
+        background: #f0f8ff;
+        border-radius: 6px;
+        padding: 16px;
+        margin-top: 16px;
+        border: 1px solid #bee5eb;
+        font-size: 0.9em;
+        color: #495057;
+      }
+
+      .highlight {
+        background: #fff3cd;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>🔮 TFT (Temporal Fusion Transformer) 아키텍처</h1>
+      <h1>🤖 TFT (Temporal Fusion Transformer) 실제 동작 과정</h1>
 
-      <div class="architecture">
-        <!-- Input Layer -->
-        <div class="layer input-layer">
-          <div class="layer-title">
-            <span class="icon">📊</span>
-            입력 데이터
-          </div>
-          <div class="layer-content">
-            <div class="component">
-              Static Covariates<br /><small>정적 변수</small>
+      <div class="architecture-flow">
+        <!-- 입력 데이터 레이어 -->
+        <div class="layer-section">
+          <div class="layer input-layer">
+            <div class="section-title">
+              <span class="icon">📊</span>
+              1단계: 다양한 유형의 입력 데이터
             </div>
-            <div class="component">
-              Historical Known<br /><small>과거 알려진 값</small>
-            </div>
-            <div class="component">
-              Future Known<br /><small>미래 알려진 값</small>
-            </div>
-            <div class="component">
-              Target History<br /><small>예측 대상 이력</small>
-            </div>
-          </div>
-        </div>
 
-        <div class="arrow"></div>
-        <div class="flow-text">특성 선택</div>
+            <div class="input-grid">
+              <div class="input-card">
+                <h4>정적 변수 (Static)</h4>
+                <div class="data-list">
+                  • 강남역<br />
+                  • 상업지구<br />
+                  • 지하철 2호선<br />
+                  • 인구밀도: 높음
+                </div>
+              </div>
 
-        <!-- Variable Selection Layer -->
-        <div class="layer selection-layer">
-          <div class="layer-title">
-            <span class="icon">🎯</span>
-            Variable Selection Network
-          </div>
-          <div class="layer-content">
-            <div class="component">
-              Feature Selection<br /><small>중요 특성 선택</small>
-            </div>
-            <div class="component">
-              Variable Importance<br /><small>변수 중요도 계산</small>
-            </div>
-          </div>
-        </div>
+              <div class="input-card">
+                <h4>과거 변수 (Historical)</h4>
+                <div class="data-list">
+                  • 9시: 1,200명<br />
+                  • 10시: 1,350명<br />
+                  • 11시: 1,100명<br />
+                  • 날씨: 맑음→흐림
+                </div>
+              </div>
 
-        <div class="arrow"></div>
-        <div class="flow-text">시계열 인코딩</div>
+              <div class="input-card">
+                <h4>미래 변수 (Future)</h4>
+                <div class="data-list">
+                  • 12시: 축제 예정<br />
+                  • 13시: 점심시간<br />
+                  • 날씨: 맑음 예보<br />
+                  • 교통: 정상 운행
+                </div>
+              </div>
+            </div>
 
-        <!-- LSTM Encoder-Decoder Layer -->
-        <div class="layer encoder-layer">
-          <div class="layer-title">
-            <span class="icon">🔄</span>
-            LSTM Encoder-Decoder
-          </div>
-          <div class="layer-content">
-            <div class="component">
-              LSTM Encoder<br /><small>과거 데이터 처리</small>
-            </div>
-            <div class="component">
-              LSTM Decoder<br /><small>미래 예측 준비</small>
-            </div>
-            <div class="component">
-              Context Vector<br /><small>정적 정보 조건화</small>
+            <div class="process-explanation">
+              <strong>실제 예시:</strong> 강남역 생활인구 예측을 위해
+              <span class="highlight">고정 정보</span>(역 특성),
+              <span class="highlight">과거 데이터</span>(시간별 인구),
+              <span class="highlight">미래 정보</span>(예정된 이벤트)를 모두
+              활용
             </div>
           </div>
         </div>
 
-        <div class="arrow"></div>
-        <div class="flow-text">장기 의존성 학습</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-text">중요한 변수들만 선별</div>
 
-        <!-- Multi-Head Attention Layer -->
-        <div class="layer attention-layer">
-          <div class="layer-title">
-            <span class="icon">👁️</span>
-            Interpretable Multi-Head Attention
-          </div>
-          <div class="layer-content">
-            <div class="component">
-              Shared Values<br /><small>공통 값 행렬</small>
+        <!-- Variable Selection 레이어 -->
+        <div class="layer-section">
+          <div class="layer selection-layer">
+            <div class="section-title">
+              <span class="icon">🎯</span>
+              2단계: Variable Selection Network - 똑똑한 변수 선택
             </div>
-            <div class="component">
-              Attention Scores<br /><small>시점별 중요도</small>
+
+            <div class="selection-bars">
+              <div class="selection-bar">
+                <div class="bar-label">축제 이벤트</div>
+                <div class="bar-visual">
+                  <div
+                    class="bar-fill"
+                    style="width: 95%; background: #dc3545"
+                  ></div>
+                </div>
+                <div class="bar-score">0.95</div>
+              </div>
+
+              <div class="selection-bar">
+                <div class="bar-label">과거 인구</div>
+                <div class="bar-visual">
+                  <div
+                    class="bar-fill"
+                    style="width: 85%; background: #fd7e14"
+                  ></div>
+                </div>
+                <div class="bar-score">0.85</div>
+              </div>
+
+              <div class="selection-bar">
+                <div class="bar-label">점심시간</div>
+                <div class="bar-visual">
+                  <div
+                    class="bar-fill"
+                    style="width: 70%; background: #ffc107"
+                  ></div>
+                </div>
+                <div class="bar-score">0.70</div>
+              </div>
+
+              <div class="selection-bar">
+                <div class="bar-label">날씨</div>
+                <div class="bar-visual">
+                  <div
+                    class="bar-fill"
+                    style="width: 40%; background: #6c757d"
+                  ></div>
+                </div>
+                <div class="bar-score">0.40</div>
+              </div>
+
+              <div class="selection-bar">
+                <div class="bar-label">요일</div>
+                <div class="bar-visual">
+                  <div
+                    class="bar-fill"
+                    style="width: 20%; background: #6c757d"
+                  ></div>
+                </div>
+                <div class="bar-score">0.20</div>
+              </div>
             </div>
-            <div class="component">
-              Long-term Dependencies<br /><small>장기 패턴 캡처</small>
+
+            <div class="process-explanation">
+              <strong>AI의 판단:</strong>
+              <span class="highlight">축제 이벤트가 가장 중요</span>하고, 과거
+              인구 패턴도 중요. 하지만 오늘 요일이나 날씨는 별로 영향이 없을 것
+              같다고 스스로 학습!
             </div>
           </div>
         </div>
 
-        <div class="arrow"></div>
-        <div class="flow-text">적응적 처리</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-text">시간 패턴 학습</div>
 
-        <!-- Gated Residual Network Layer -->
-        <div class="layer gating-layer">
-          <div class="layer-title">
-            <span class="icon">🚪</span>
-            Gated Residual Network
-          </div>
-          <div class="layer-content">
-            <div class="component">
-              Gating Mechanism<br /><small>불필요 성분 억제</small>
+        <!-- LSTM Encoder-Decoder 레이어 -->
+        <div class="layer-section">
+          <div class="layer encoder-layer">
+            <div class="section-title">
+              <span class="icon">🔄</span>
+              3단계: LSTM Encoder-Decoder - 시간의 흐름 이해
             </div>
-            <div class="component">
-              Residual Connection<br /><small>잔차 연결</small>
+
+            <div class="lstm-flow">
+              <div class="lstm-step">
+                <div class="step-time">9시</div>
+                <div class="step-value">1,200명</div>
+              </div>
+              <div class="lstm-step">
+                <div class="step-time">10시</div>
+                <div class="step-value">1,350명</div>
+              </div>
+              <div class="lstm-step">
+                <div class="step-time">11시</div>
+                <div class="step-value">1,100명</div>
+              </div>
+              <div
+                class="lstm-step"
+                style="border-color: #198754; background: #f0fff4"
+              >
+                <div class="step-time">학습된 패턴</div>
+                <div class="step-value">점심 전 증가</div>
+              </div>
             </div>
-            <div class="component">
-              Non-linear Processing<br /><small>비선형 변환</small>
+
+            <div class="process-explanation">
+              <strong>시간 패턴 발견:</strong> LSTM이
+              <span class="highlight">9시→10시는 증가</span>,
+              <span class="highlight">10시→11시는 감소</span> 패턴을 학습.
+              점심시간 전에는 보통 사람들이 모이기 시작한다는 규칙을 발견!
             </div>
           </div>
         </div>
 
-        <div class="arrow"></div>
-        <div class="flow-text">최종 예측</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-text">중요한 시점 찾기</div>
 
-        <!-- Output Layer -->
-        <div class="layer output-layer">
-          <div class="layer-title">
-            <span class="icon">📈</span>
-            Multi-Quantile Output
+        <!-- Multi-Head Attention 레이어 -->
+        <div class="layer-section">
+          <div class="layer attention-layer">
+            <div class="section-title">
+              <span class="icon">👁️</span>
+              4단계: Multi-Head Attention - 언제가 중요한지 집중
+            </div>
+
+            <div class="attention-matrix">
+              <div class="attention-cell attention-low">9시<br />0.1</div>
+              <div class="attention-cell attention-medium">10시<br />0.3</div>
+              <div class="attention-cell attention-high">11시<br />0.6</div>
+              <div class="attention-cell attention-high">축제<br />0.9</div>
+              <div class="attention-cell attention-medium">점심<br />0.4</div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                margin: 16px 0;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 6px">
+                <div
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    background: #dc3545;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <span style="font-size: 0.85em">높은 집중도</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px">
+                <div
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    background: #fd7e14;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <span style="font-size: 0.85em">중간 집중도</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px">
+                <div
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    background: #6c757d;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <span style="font-size: 0.85em">낮은 집중도</span>
+              </div>
+            </div>
+
+            <div class="process-explanation">
+              <strong>AI의 집중:</strong>
+              <span class="highlight">11시 직전 상황과 축제 정보</span>에 가장
+              집중! 과거보다는 최근 상황과 특별한 이벤트가 예측에 더 중요하다고
+              판단.
+            </div>
           </div>
-          <div class="layer-content">
-            <div class="component">
-              Point Forecast<br /><small>점 예측값</small>
+        </div>
+
+        <div class="flow-arrow"></div>
+        <div class="flow-text">최적화된 정보 처리</div>
+
+        <!-- Gated Residual Network 레이어 -->
+        <div class="layer-section">
+          <div class="layer gating-layer">
+            <div class="section-title">
+              <span class="icon">🚪</span>
+              5단계: Gated Residual Network - 정보의 문지기
             </div>
-            <div class="component">
-              Prediction Intervals<br /><small>예측 구간</small>
+
+            <div class="data-example">
+              <div class="example-label">
+                <strong>게이트 작동</strong><br />
+                <small>불필요한 정보 차단</small>
+              </div>
+              <div class="example-content">
+                <div style="display: flex; flex-direction: column; gap: 8px">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span>축제 영향 정보</span>
+                    <span style="color: #198754; font-weight: 600">✓ 통과</span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span>최근 인구 변화</span>
+                    <span style="color: #198754; font-weight: 600">✓ 통과</span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span>노이즈 데이터</span>
+                    <span style="color: #dc3545; font-weight: 600">✗ 차단</span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span>관련없는 정보</span>
+                    <span style="color: #dc3545; font-weight: 600">✗ 차단</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="component">
-              Uncertainty Quantification<br /><small>불확실성 정량화</small>
+
+            <div class="process-explanation">
+              <strong>스마트 필터링:</strong> 게이트가
+              <span class="highlight">중요한 정보만 통과</span>시키고 노이즈나
+              관련 없는 정보는 자동으로 차단. 마치 경비원처럼 정보를 선별!
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-arrow"></div>
+        <div class="flow-text">최종 예측 생성</div>
+
+        <!-- 출력 레이어 -->
+        <div class="layer-section">
+          <div class="layer output-layer">
+            <div class="section-title">
+              <span class="icon">📈</span>
+              6단계: Multi-Quantile Output - 확신있는 예측
+            </div>
+
+            <div class="prediction-timeline">
+              <div class="prediction-point">
+                <div class="pred-time">현재 11시</div>
+                <div class="pred-value">1,100명</div>
+                <div class="pred-confidence">실제 데이터</div>
+              </div>
+
+              <div class="prediction-point future">
+                <div class="pred-time">12시 예측</div>
+                <div class="pred-value">2,800명</div>
+                <div class="pred-confidence">신뢰도 95%</div>
+              </div>
+
+              <div class="prediction-point future">
+                <div class="pred-time">13시 예측</div>
+                <div class="pred-value">3,200명</div>
+                <div class="pred-confidence">신뢰도 87%</div>
+              </div>
+
+              <div class="prediction-point future">
+                <div class="pred-time">14시 예측</div>
+                <div class="pred-value">2,100명</div>
+                <div class="pred-confidence">신뢰도 78%</div>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: #f0fdf9;
+                padding: 16px;
+                border-radius: 6px;
+                border: 1px solid #20c997;
+                margin-top: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  font-size: 0.85em;
+                  margin-bottom: 8px;
+                "
+              >
+                <span><strong>12시 예측 범위:</strong></span>
+                <span style="color: #6c757d">축제 효과 반영</span>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  font-size: 0.85em;
+                "
+              >
+                <span>최소: 2,400명</span>
+                <span style="font-weight: 600; color: #20c997"
+                  >예상: 2,800명</span
+                >
+                <span>최대: 3,200명</span>
+              </div>
+              <div
+                style="
+                  margin-top: 8px;
+                  font-size: 0.8em;
+                  color: #6c757d;
+                  text-align: center;
+                "
+              >
+                ↑ 축제로 인한 평소 대비 150% 증가 예상
+              </div>
+            </div>
+
+            <div class="process-explanation">
+              <strong>똑똑한 예측:</strong>
+              <span class="highlight">축제 때문에 평소보다 2배 증가</span>할
+              것으로 예측! 단순히 숫자만 주는게 아니라
+              <span class="highlight">얼마나 확실한지</span>도 함께 알려줌.
             </div>
           </div>
         </div>
       </div>
 
-      <div class="description">
-        <h3>🔑 TFT 핵심 특징</h3>
-        <div class="key-features">
-          <div class="feature">
-            <strong>하이브리드 구조</strong>
-            LSTM의 순환성과 Transformer의 어텐션을 결합
+      <div
+        style="
+          background: #f8f9fa;
+          border-radius: 8px;
+          padding: 24px;
+          margin-top: 32px;
+          border: 1px solid #e9ecef;
+        "
+      >
+        <h3
+          style="
+            margin-top: 0;
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 1.1em;
+          "
+        >
+          🎯 TFT의 핵심 장점
+        </h3>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+          "
+        >
+          <div
+            style="
+              background: white;
+              padding: 16px;
+              border-radius: 6px;
+              border: 1px solid #e9ecef;
+            "
+          >
+            <strong style="color: #007acc">다양한 데이터 통합</strong><br />
+            <small style="color: #495057"
+              >과거, 현재, 미래 정보를 모두 활용</small
+            >
           </div>
-          <div class="feature">
-            <strong>해석 가능성</strong>
-            변수 중요도와 시점별 어텐션 스코어 제공
+          <div
+            style="
+              background: white;
+              padding: 16px;
+              border-radius: 6px;
+              border: 1px solid #e9ecef;
+            "
+          >
+            <strong style="color: #6f42c1">똑똑한 선택</strong><br />
+            <small style="color: #495057">중요한 변수만 자동으로 선별</small>
           </div>
-          <div class="feature">
-            <strong>다중 입력 처리</strong>
-            정적/과거/미래 변수를 통합적으로 활용
+          <div
+            style="
+              background: white;
+              padding: 16px;
+              border-radius: 6px;
+              border: 1px solid #e9ecef;
+            "
+          >
+            <strong style="color: #198754">시간 패턴 이해</strong><br />
+            <small style="color: #495057">과거 데이터에서 규칙 발견</small>
           </div>
-          <div class="feature">
-            <strong>불확실성 모델링</strong>
-            다중 분위수 회귀로 예측 구간 제공
+          <div
+            style="
+              background: white;
+              padding: 16px;
+              border-radius: 6px;
+              border: 1px solid #e9ecef;
+            "
+          >
+            <strong style="color: #20c997">확신있는 예측</strong><br />
+            <small style="color: #495057">예측값과 신뢰도를 함께 제공</small>
           </div>
         </div>
       </div>
